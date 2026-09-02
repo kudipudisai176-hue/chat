@@ -10,7 +10,8 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
-mongoose.connect('mongodb://127.0.0.1:27017/secret-friends')
+const MONGO_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/secret-friends';
+mongoose.connect(MONGO_URI)
     .then(() => console.log('Connected to MongoDB'))
     .catch(err => console.error('MongoDB connection error:', err));
 
@@ -121,6 +122,10 @@ app.post('/api/messages', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-});
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+        console.log(`Server running on http://localhost:${PORT}`);
+    });
+}
+
+export default app;
